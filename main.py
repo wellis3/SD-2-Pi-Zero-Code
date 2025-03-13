@@ -19,7 +19,7 @@ import adafruit_ism330dhcx
 
 class BikeTelemetry:
     def __init__(self):
-        # Pin definitions (these will need to be updated based on your specific hardware)
+        # TODO : update pins based on my specific hardware
         self.LINEAR_POT_FRONT = 'A1'  # Analog pin
         self.LINEAR_POT_REAR = 'A2'  # Analog pin
         self.BATTERY_PIN = 'A7'  # Analog pin
@@ -70,10 +70,11 @@ class BikeTelemetry:
     def setup_gpio(self):
         """Setup GPIO pins (this would be platform-specific)"""
         print("Setting up GPIO pins")
-        # In a real implementation, you would initialize your GPIO pins here
+        # TODO : In a real implementation, you would initialize your GPIO pins here
         # For example with RPi.GPIO or CircuitPython's digitalio
 
     def setup_sd_card(self):
+        # TODO : Setup file storage
         """Initialize SD card"""
         print("Setting up SD card")
         try:
@@ -95,6 +96,7 @@ class BikeTelemetry:
         """Initialize real-time clock"""
         print("Setting up RTC")
         try:
+            # TODO : Setup the clock on the 0w2
             # This is a placeholder for the actual RTC initialization
             # In CircuitPython, you might use:
             # i2c = busio.I2C(board.SCL, board.SDA)
@@ -110,6 +112,7 @@ class BikeTelemetry:
         """Initialize the ISM330DHCX accelerometer and gyroscope"""
         print("Setting up accelerometer")
         try:
+            # TODO : Initalize the accelerometers ? are we even using them now
             # This is a placeholder for the actual accelerometer setup
             # In CircuitPython, you might use:
             # i2c = busio.I2C(board.SCL, board.SDA)
@@ -122,12 +125,14 @@ class BikeTelemetry:
             self.set_rgb_color(0, 0, 0)  # Off
 
     def read_analog(self, pin):
+        # TODO : set this up so it accuratley reads the telemetry sensor
         """Read analog value (placeholder)"""
         # This would be implemented based on your specific hardware
         # For example with CircuitPython's analogio
         return 512  # Placeholder value
 
     def read_digital(self, pin):
+        # TODO : set this up for the button
         """Read digital value (placeholder)"""
         # This would be implemented based on your specific hardware
         return False  # Placeholder value
@@ -135,6 +140,7 @@ class BikeTelemetry:
     def set_rgb_color(self, red, green, blue):
         """Set RGB LED color"""
         print(f"Setting LED: R={red}, G={green}, B={blue}")
+        # TODO : make this change a real world led
         # This would be implemented based on your specific hardware
         # For CircuitPython, you might use digitalio outputs
 
@@ -167,7 +173,7 @@ class BikeTelemetry:
     def check_battery_voltage(self):
         """Check battery voltage and warn if low"""
         battery_value = self.read_analog(self.BATTERY_PIN)
-        # Convert to voltage (this calculation will depend on your hardware)
+        # TODO : Convert to voltage (this calculation will depend on your hardware)
         battery_voltage = battery_value * 6.6 / 1024
 
         if battery_voltage < 3.3:  # Low battery
@@ -190,6 +196,7 @@ class BikeTelemetry:
                 counter += 1
                 file_name = f"{base_name}{counter}{extension}"
 
+            # TODO : Open text file here
             # Would open the file here in a real implementation
             # self.data_log = open(f"/sd/{file_name}", "w")
             print(f"New file created: {file_name}")
@@ -207,7 +214,7 @@ class BikeTelemetry:
         if not self.file_name:
             return False
 
-        # Would open file for writing here in a real implementation
+        # TODO : Open the text file and start writing to it instead of printing
         print(f"Starting run with file: {self.file_name}")
 
         # Write header information
@@ -234,7 +241,7 @@ class BikeTelemetry:
         if (current_time - self.previous_millis_record) >= self.time_period_record:
             self.previous_millis_record = current_time
 
-            # Would read acceleration and gyro data in a real implementation
+            # TODO : Would read acceleration and gyro data in a real implementation
             accel_x, accel_y, accel_z = 0, 0, 0  # Placeholder values
             gyro_x, gyro_y, gyro_z = 0, 0, 0  # Placeholder values
 
@@ -243,6 +250,7 @@ class BikeTelemetry:
             front_pos = 1023 - self.read_analog(self.LINEAR_POT_FRONT)
 
             # TODO : change the formatting of this line so it is more intuitive ? why are there 0s at the end
+            # TODO : write to file
             data_line = f"{accel_x},{accel_y},{accel_z},{gyro_x},{gyro_y},{gyro_z},{rear_pos},{front_pos},0.0,0.0"
             print(f"Data: {data_line}")
 
@@ -257,7 +265,7 @@ class BikeTelemetry:
 
         print(f"Run completed. Duration: {self.total_time}ms")
 
-        # Would write final data and close file in a real implementation
+        # TODO Would write final data and close file in a real implementation
         # self.data_log.flush()
         # self.data_log.close()
 
@@ -277,11 +285,6 @@ class BikeTelemetry:
 
             else:  # Standby mode
                 self.set_rgb_color(0, 1, 0)  # Green = ready
-                # Check for upload request
-                # In a real implementation, you would check for serial data here
-
-                # Placeholder for upload detection
-                # if serial_data_available():
 
 
 if __name__ == "__main__":
