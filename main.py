@@ -224,7 +224,7 @@ class BikeTelemetry:
         print(f"RB:250:test2,FB:250:test3")
 
         print(f"Rear Calibration Value : {self.rear_calibration_initial}")
-        print(f"Front Calibbration Value : {self.front_calibration_initial}")
+        print(f"Front Calibration Value : {self.front_calibration_initial}")
 
         print("///RUN COMMENTS///")
         print(" ")
@@ -237,7 +237,6 @@ class BikeTelemetry:
     def record_data(self):
         """Record sensor data to file"""
         current_time = time.monotonic() * 1000  # Convert to milliseconds
-
         if (current_time - self.previous_millis_record) >= self.time_period_record:
             self.previous_millis_record = current_time
 
@@ -279,10 +278,9 @@ class BikeTelemetry:
                 self.set_rgb_color(1, 0, 0)  # Red = recording
                 if self.start_run():
                     # Record until button state changes
-                    while self.get_button_state() == 0:
+                    while button_state == 0: # TODO : Change this to self.get_button_state() ==0
                         self.record_data()
                     self.finish_run()
-
             else:  # Standby mode
                 self.set_rgb_color(0, 1, 0)  # Green = ready
 
