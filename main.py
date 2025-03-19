@@ -2,7 +2,7 @@
 Bike Telemetry Project
 Converted from Arduino to Python for new microprocessor platform
 """
-
+import json
 import time
 import datetime
 import os
@@ -53,7 +53,6 @@ class BikeTelemetry:
 
         # Setup
         self.setup_gpio()
-        self.setup_sd_card()
         self.setup_rtc()
         self.setup_accelerometer()
 
@@ -73,24 +72,6 @@ class BikeTelemetry:
         # TODO : In a real implementation, you would initialize your GPIO pins here
         # For example with RPi.GPIO or CircuitPython's digitalio
 
-    def setup_sd_card(self):
-        # TODO : Setup file storage
-        """Initialize SD card"""
-        print("Setting up SD card")
-        try:
-            # This is a placeholder for the actual SD card initialization
-            # In CircuitPython, you might use something like:
-            # spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-            # cs = digitalio.DigitalInOut(board.SD_CS)
-            # sdcard = adafruit_sdcard.SDCard(spi, cs)
-            # vfs = storage.VfsFat(sdcard)
-            # storage.mount(vfs, "/sd")
-            print("SD card initialized")
-        except Exception as e:
-            print(f"SD card initialization failed: {e}")
-            self.set_rgb_color(0, 0, 1)  # Blue = error
-            time.sleep(3)
-            self.set_rgb_color(0, 0, 0)  # Off
 
     def setup_rtc(self):
         """Initialize real-time clock"""
@@ -139,13 +120,14 @@ class BikeTelemetry:
 
     def set_rgb_color(self, red, green, blue):
         """Set RGB LED color"""
-        print(f"Setting LED: R={red}, G={green}, B={blue}")
+        # print(f"Setting LED: R={red}, G={green}, B={blue}")
         # TODO : make this change a real world led
         # This would be implemented based on your specific hardware
         # For CircuitPython, you might use digitalio outputs
 
     def flash_led(self):
         """Flash LED white for testing"""
+        print("Flash LED initialized")
         for _ in range(20):
             self.set_rgb_color(1, 1, 1)  # White
             time.sleep(0.05)
@@ -183,7 +165,7 @@ class BikeTelemetry:
 
         return battery_voltage
 
-    def open_new_file(self):
+    def open_new_data_file(self):
         """Open a new data file with unique name"""
         # Check if file exists and create new name if needed
         file_name = self.file_name
@@ -207,33 +189,79 @@ class BikeTelemetry:
             self.set_rgb_color(0, 0, 0)  # Off
             return None
 
+    def open_new_header_file(self):
+        """Open a new JSON data file with unique name"""
+        # Check if file exists and create new name if needed
+        file_name = self.file_name
+        base_name = file_name.split('.')[0][:3]  # Get base name (e.g., "run")
+        extension = ".json"
+        counter = 1
+
+        try:
+            while os.path.exists(f"/home/pi/header_files/{file_name}"):
+                counter += 1
+                file_name = f"{base_name}{counter}{extension}"
+
+            # Create JSON structure
+            self.json_data = {
+                "run_file_name": file_name,
+                "recording_frequencies": [{
+                    "front": "",
+                    "rear": ""
+                }],
+                "calibration_values": [{
+                    "front": "",
+                    "rear": ""
+                }],
+                "comments": ""
+            }
+
+            # Open file for later writing
+            self.data_log = open(f"/home/pi/header_files/{file_name}", "w")
+            return file_name
+
+        except Exception as e:
+            print(f"File error: {e}")
+            self.set_rgb_color(0, 0, 1)  # Blue = error
+            time.sleep(3)
+            self.set_rgb_color(0, 0, 0)  # Off
+            return None
+
     def start_run(self):
         """Start a new recording run"""
-        self.file_name = self.open_new_file()
+        self.file_name = self.open_new_header_file()
         if not self.file_name:
             return False
 
-        # Write to the file instead of printing
-        print(f"Starting run with file: {self.file_name}\n")
+        # Print status to console (keeping this for debugging)
+        print(f"Starting run with file: {self.file_name}")
 
-        # Write header information
-        self.data_log.write("///HEADER///\n")
-        self.data_log.write(f"Rear sus recording frequency : {1000 / self.time_period_record}\n")
-        self.data_log.write(f"Front sus recording frequency : {1000 / self.time_period_record}\n")
-        self.data_log.write(f"RB:250:test2,FB:250:test3\n")
+        # Fill in the JSON structure with data
+        front_frequency = 1000 / self.time_period_record
+        rear_frequency = 1000 / self.time_period_record
 
-        self.data_log.write(f"Rear Calibration Value : {self.rear_calibration_initial}\n")
-        self.data_log.write(f"Front Calibration Value : {self.front_calibration_initial}\n")
+        self.json_data["recording_frequencies"][0]["front"] = str(front_frequency)
+        self.json_data["recording_frequencies"][0]["rear"] = str(rear_frequency)
 
-        self.data_log.write("///RUN COMMENTS///\n")
-        self.data_log.write(" \n")
+        self.json_data["calibration_values"][0]["front"] = str(self.front_calibration_initial)
+        self.json_data["calibration_values"][0]["rear"] = str(self.rear_calibration_initial)
 
-        self.data_log.write("///RUN DATA///\n")
+        # Comments could be blank or filled later
+        self.json_data["comments"] = ""
+
+        # Write the JSON data to the file
+        json.dump(self.json_data, self.data_log, indent=2)
+        self.data_log.flush()  # Make sure it's written to disk
+
         time.sleep(1)
         self.start_time = time.monotonic() * 1000  # Convert to milliseconds
         return True
 
     def record_data(self):
+
+        self.file_name = self.open_new_data_file()
+        if not self.file_name:
+            return False
         """Record sensor data to file"""
         current_time = time.monotonic() * 1000  # Convert to milliseconds
         if (current_time - self.previous_millis_record) >= self.time_period_record:

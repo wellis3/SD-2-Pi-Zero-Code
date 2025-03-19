@@ -1,0 +1,12 @@
+{
+  "run_file_name" : " ",
+  "recording_frequencies": [{
+    "front" : "",
+    "rear": ""
+  }],
+  "calibration_values": [{
+    "front": "",
+    "rear": ""
+  }],
+  "comments": ""
+}
