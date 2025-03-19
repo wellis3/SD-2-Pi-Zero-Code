@@ -249,8 +249,8 @@ class BikeTelemetry:
 
             # TODO : change the formatting of this line so it is more intuitive ? why are there 0s at the end
             # TODO : write to file
-            data_line = f"{accel_x},{accel_y},{accel_z},{gyro_x},{gyro_y},{gyro_z},{rear_pos},{front_pos},0.0,0.0"
-            self.data_log.write(f"Data: {data_line}")
+            data_line = f"{accel_x},{accel_y},{accel_z},{gyro_x},{gyro_y},{gyro_z},{rear_pos},{front_pos},0.0,0.0\n"
+            self.data_log.write(data_line)
 
             # Would write to file in a real implementation
             return True
