@@ -198,7 +198,7 @@ class BikeTelemetry:
 
             # Open text file
             self.data_log = open(f"/home/pi/run_logs/{file_name}", "w")
-            self.data_log.write(f"New file created: {file_name}\n")
+            print(f"New file created: {file_name}\n")
             return file_name
         except Exception as e:
             print(f"File error: {e}")
@@ -214,7 +214,7 @@ class BikeTelemetry:
             return False
 
         # Write to the file instead of printing
-        self.data_log.write(f"Starting run with file: {self.file_name}\n")
+        print(f"Starting run with file: {self.file_name}\n")
 
         # Write header information
         self.data_log.write("///HEADER///\n")
@@ -250,7 +250,7 @@ class BikeTelemetry:
             # TODO : change the formatting of this line so it is more intuitive ? why are there 0s at the end
             # TODO : write to file
             data_line = f"{accel_x},{accel_y},{accel_z},{gyro_x},{gyro_y},{gyro_z},{rear_pos},{front_pos},0.0,0.0"
-            print(f"Data: {data_line}")
+            self.data_log.write(f"Data: {data_line}")
 
             # Would write to file in a real implementation
             return True
