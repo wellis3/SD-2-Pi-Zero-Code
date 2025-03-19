@@ -170,11 +170,14 @@ class BikeTelemetry:
         # Check if file exists and create new name if needed
         file_name = self.file_name
         base_name = file_name.split('.')[0][:3]  # Get base name (e.g., "run")
-        extension = ".txt"
+        extension = ".txt"  # Always use .txt extension
+
+        # Explicitly set the file_name with the .txt extension
+        file_name = f"{base_name}{extension}"
         counter = 1
 
         try:
-            while os.path.exists(f"/home/pi/{file_name}"):
+            while os.path.exists(f"/home/pi/run_logs/{file_name}"):
                 counter += 1
                 file_name = f"{base_name}{counter}{extension}"
 
