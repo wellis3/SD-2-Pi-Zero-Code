@@ -192,14 +192,13 @@ class BikeTelemetry:
         counter = 1
 
         try:
-            while os.path.exists(f"/sd/{file_name}"):
+            while os.path.exists(f"/home/pi/{file_name}"):
                 counter += 1
                 file_name = f"{base_name}{counter}{extension}"
 
-            # TODO : Open text file here
-            # Would open the file here in a real implementation
-            # self.data_log = open(f"/sd/{file_name}", "w")
-            print(f"New file created: {file_name}")
+            # Open text file
+            self.data_log = open(f"/home/pi/run_logs/{file_name}", "w")
+            self.data_log.write(f"New file created: {file_name}\n")
             return file_name
         except Exception as e:
             print(f"File error: {e}")
@@ -214,22 +213,22 @@ class BikeTelemetry:
         if not self.file_name:
             return False
 
-        # TODO : Open the text file and start writing to it instead of printing
-        print(f"Starting run with file: {self.file_name}")
+        # Write to the file instead of printing
+        self.data_log.write(f"Starting run with file: {self.file_name}\n")
 
         # Write header information
-        print("///HEADER///")
-        print(f"Rear sus recording frequency : {1000 / self.time_period_record}")
-        print(f"Front sus recording frequency : {1000 / self.time_period_record}")
-        print(f"RB:250:test2,FB:250:test3")
+        self.data_log.write("///HEADER///\n")
+        self.data_log.write(f"Rear sus recording frequency : {1000 / self.time_period_record}\n")
+        self.data_log.write(f"Front sus recording frequency : {1000 / self.time_period_record}\n")
+        self.data_log.write(f"RB:250:test2,FB:250:test3\n")
 
-        print(f"Rear Calibration Value : {self.rear_calibration_initial}")
-        print(f"Front Calibration Value : {self.front_calibration_initial}")
+        self.data_log.write(f"Rear Calibration Value : {self.rear_calibration_initial}\n")
+        self.data_log.write(f"Front Calibration Value : {self.front_calibration_initial}\n")
 
-        print("///RUN COMMENTS///")
-        print(" ")
+        self.data_log.write("///RUN COMMENTS///\n")
+        self.data_log.write(" \n")
 
-        print("///RUN DATA///")
+        self.data_log.write("///RUN DATA///\n")
         time.sleep(1)
         self.start_time = time.monotonic() * 1000  # Convert to milliseconds
         return True
