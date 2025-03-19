@@ -236,6 +236,16 @@ class BikeTelemetry:
         # Print status to console (keeping this for debugging)
         print(f"Starting run. Header has the file: {header_file_name}")
 
+        # Save a reference to the header file
+        header_file = self.data_log
+
+        # Get the data file name first
+        data_file_name = self.open_new_data_file()
+        if not data_file_name:
+            return False
+
+        # Now self.data_log points to the data file, so we need to use our saved reference
+
         # Fill in the JSON structure with data
         front_frequency = 1000 / self.time_period_record
         rear_frequency = 1000 / self.time_period_record
@@ -246,20 +256,16 @@ class BikeTelemetry:
         self.json_data["calibration_values"][0]["front"] = str(self.front_calibration_initial)
         self.json_data["calibration_values"][0]["rear"] = str(self.rear_calibration_initial)
 
-        # Comments could be blank or filled later
-        self.json_data["comments"] = ""
-
-        # Get the data file name first
-        data_file_name = self.open_new_data_file()
-        if not data_file_name:
-            return False
-
         # Update the JSON with the correct data file name
         self.json_data["run_file_name"] = data_file_name
 
-        # Now write the JSON data to the file (after we have the data file name)
-        json.dump(self.json_data, self.data_log, indent=2)
-        self.data_log.flush()  # Make sure it's written to disk
+        # Comments could be blank or filled later
+        self.json_data["comments"] = ""
+
+        # Now write the JSON data to the HEADER file using our saved reference
+        json.dump(self.json_data, header_file, indent=2)
+        header_file.flush()  # Make sure it's written to disk
+        header_file.close()  # Close the header file as we're done with it
 
         time.sleep(1)
         self.start_time = time.monotonic() * 1000  # Convert to milliseconds
