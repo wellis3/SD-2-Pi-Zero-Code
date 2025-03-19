@@ -260,11 +260,12 @@ class BikeTelemetry:
         self.file_name = self.open_new_data_file()
         if not self.file_name:
             return False
+        print(f"Recording data to file: {self.file_name}")
         return True
 
     def record_data(self):
         """Record sensor data to file"""
-        print(f"Recording data to file: {self.file_name}")
+
         current_time = time.monotonic() * 1000  # Convert to milliseconds
         if (current_time - self.previous_millis_record) >= self.time_period_record:
             self.previous_millis_record = current_time
