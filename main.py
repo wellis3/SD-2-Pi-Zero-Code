@@ -29,7 +29,6 @@ class BikeTelemetry:
         self.RGB_GREEN = 12
         self.RGB_BLUE = 11
 
-        # TODO : change the file name so it doesnt have 1.txt here
         # File management
         self.file_name = "run"
         self.data_log = None
@@ -250,17 +249,22 @@ class BikeTelemetry:
         # Comments could be blank or filled later
         self.json_data["comments"] = ""
 
-        # Write the JSON data to the file
+        # Get the data file name first
+        data_file_name = self.open_new_data_file()
+        if not data_file_name:
+            return False
+
+        # Update the JSON with the correct data file name
+        self.json_data["run_file_name"] = data_file_name
+
+        # Now write the JSON data to the file (after we have the data file name)
         json.dump(self.json_data, self.data_log, indent=2)
         self.data_log.flush()  # Make sure it's written to disk
 
         time.sleep(1)
         self.start_time = time.monotonic() * 1000  # Convert to milliseconds
 
-        self.file_name = self.open_new_data_file()
-        if not self.file_name:
-            return False
-        print(f"Recording data to file: {self.file_name}")
+        print(f"Recording data to file: {data_file_name}")
         return True
 
     def record_data(self):
@@ -278,8 +282,7 @@ class BikeTelemetry:
             rear_pos = self.read_analog(self.LINEAR_POT_REAR)
             front_pos = 1023 - self.read_analog(self.LINEAR_POT_FRONT)
 
-            # TODO : change the formatting of this line so it is more intuitive ? why are there 0s at the end
-            # TODO : write to file
+
             data_line = f"{accel_x},{accel_y},{accel_z},{gyro_x},{gyro_y},{gyro_z},{rear_pos},{front_pos},0.0,0.0\n"
             self.data_log.write(data_line)
 
