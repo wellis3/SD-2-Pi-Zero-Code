@@ -230,12 +230,12 @@ class BikeTelemetry:
 
     def start_run(self):
         """Start a new recording run"""
-        self.file_name = self.open_new_header_file()
-        if not self.file_name:
+        header_file_name = self.open_new_header_file()
+        if not header_file_name:
             return False
 
         # Print status to console (keeping this for debugging)
-        print(f"Starting run with file: {self.file_name}")
+        print(f"Starting run. Header has the file: {header_file_name}")
 
         # Fill in the JSON structure with data
         front_frequency = 1000 / self.time_period_record
@@ -264,6 +264,7 @@ class BikeTelemetry:
 
     def record_data(self):
         """Record sensor data to file"""
+        print(f"Recording data to file: {self.file_name}")
         current_time = time.monotonic() * 1000  # Convert to milliseconds
         if (current_time - self.previous_millis_record) >= self.time_period_record:
             self.previous_millis_record = current_time
