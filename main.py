@@ -29,8 +29,9 @@ class BikeTelemetry:
         self.RGB_GREEN = 12
         self.RGB_BLUE = 11
 
+        # TODO : change the file name so it doesnt have 1.txt here
         # File management
-        self.file_name = "run1.txt"
+        self.file_name = "run"
         self.data_log = None
 
         # Timing variables
@@ -168,13 +169,12 @@ class BikeTelemetry:
     def open_new_data_file(self):
         """Open a new data file with unique name"""
         # Check if file exists and create new name if needed
-        file_name = self.file_name
-        base_name = file_name.split('.')[0][:3]  # Get base name (e.g., "run")
+        base_name = self.file_name  # Get base name (e.g., "run")
         extension = ".txt"  # Always use .txt extension
 
         # Explicitly set the file_name with the .txt extension
-        file_name = f"{base_name}{extension}"
         counter = 1
+        file_name = f"{base_name}{counter}{extension}"
 
         try:
             while os.path.exists(f"/home/pi/run_logs/{file_name}"):
@@ -195,8 +195,7 @@ class BikeTelemetry:
     def open_new_header_file(self):
         """Open a new JSON data file with unique name"""
         # Check if file exists and create new name if needed
-        file_name = self.file_name
-        base_name = file_name.split('.')[0][:3]  # Get base name (e.g., "run")
+        base_name = self.file_name  # Get base name (e.g., "run")
         extension = ".json"
         counter = 1
 
