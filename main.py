@@ -171,8 +171,6 @@ class BikeTelemetry:
         # Check if file exists and create new name if needed
         base_name = self.file_name  # Get base name (e.g., "run")
         extension = ".txt"  # Always use .txt extension
-
-        # Explicitly set the file_name with the .txt extension
         counter = 1
         file_name = f"{base_name}{counter}{extension}"
 
@@ -198,6 +196,7 @@ class BikeTelemetry:
         base_name = self.file_name  # Get base name (e.g., "run")
         extension = ".json"
         counter = 1
+        file_name = f"{base_name}{counter}{extension}"
 
         try:
             while os.path.exists(f"/home/pi/header_files/{file_name}"):
