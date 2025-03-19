@@ -255,13 +255,13 @@ class BikeTelemetry:
 
         time.sleep(1)
         self.start_time = time.monotonic() * 1000  # Convert to milliseconds
-        return True
-
-    def record_data(self):
 
         self.file_name = self.open_new_data_file()
         if not self.file_name:
             return False
+        return True
+
+    def record_data(self):
         """Record sensor data to file"""
         current_time = time.monotonic() * 1000  # Convert to milliseconds
         if (current_time - self.previous_millis_record) >= self.time_period_record:
