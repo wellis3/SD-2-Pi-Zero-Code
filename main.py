@@ -6,6 +6,7 @@ import json
 import time
 import datetime
 import os
+from regression_value import calculate_regression_values, print_regression_results
 '''
 import board
 import busio
@@ -43,6 +44,10 @@ class BikeTelemetry:
         # Calibration variables
         self.rear_calibration_initial = 0
         self.front_calibration_initial = 0
+
+        # Data storage
+        self.fork_values = []
+        self.shock_values = []
 
         # Button debounce variables
         self.last_button_state = 0
@@ -271,6 +276,8 @@ class BikeTelemetry:
         self.start_time = time.monotonic() * 1000  # Convert to milliseconds
 
         print(f"Recording data to file: {data_file_name}")
+        self.fork_values = []
+        self.shock_values = []
         return True
 
     def record_data(self):
@@ -288,12 +295,22 @@ class BikeTelemetry:
             rear_pos = self.read_analog(self.LINEAR_POT_REAR)
             front_pos = 1023 - self.read_analog(self.LINEAR_POT_FRONT)
 
+            # Add to ongoing array
+            self.fork_values = self.fork_values + [front_pos]
+            self.shock_values = self.shock_values + [rear_pos]
 
+            # Calculate and print the regression values
+            fork_regression_results = calculate_regression_values(self.fork_values)
+            print_regression_results(fork_regression_results, "Fork")
+
+            shock_regression_results = calculate_regression_values(self.shock_values)
+            print_regression_results(shock_regression_results, "Shock")
+
+            # Print data to file
             data_line = f"{accel_x},{accel_y},{accel_z},{gyro_x},{gyro_y},{gyro_z},{rear_pos},{front_pos},0.0,0.0\n"
             self.data_log.write(data_line)
 
-            # Would write to file in a real implementation
-            return True
+#            return True
         return False
 
     def finish_run(self):
